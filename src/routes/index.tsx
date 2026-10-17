@@ -1,4 +1,5 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useCart, cartActions } from "@/lib/cart";
 import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
@@ -23,7 +24,6 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-type Line = { product: Product; qty: number };
 
 function Reveal({ children, delay = 0 }: { children: ReactNode; delay?: number }) {
   return (
@@ -320,7 +320,9 @@ function ProductCard({ p, onAdd, wished, onWish }: { p: Product; onAdd: () => vo
   return (
     <motion.div whileHover={{ y: -8 }} className="group h-full overflow-hidden rounded-3xl bg-card shadow-soft">
       <div className="relative aspect-square overflow-hidden">
-        <img src={p.image} alt={p.name} loading="lazy" width={1024} height={1024} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        <Link to="/produit/$id" params={{ id: p.id }} aria-label={p.name}>
+          <img src={p.image} alt={p.name} loading="lazy" width={1024} height={1024} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+        </Link>
         {p.badge && <span className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-bold ${badgeColor}`}>{p.badge}</span>}
         <button aria-label="Ajouter aux favoris" onClick={onWish} className="absolute right-3 top-3 rounded-full bg-background p-2 transition hover:scale-110">
           <Heart className={`h-4 w-4 ${wished ? "fill-coral text-coral" : ""}`} />
@@ -339,7 +341,7 @@ function ProductCard({ p, onAdd, wished, onWish }: { p: Product; onAdd: () => vo
           <span className="rounded-full bg-muted px-2.5 py-1 font-bold text-muted-foreground">{p.age}</span>
           <span className="flex items-center gap-1 font-semibold"><Star className="h-3.5 w-3.5 fill-accent text-accent" />{p.rating} ({p.reviews})</span>
         </div>
-        <h3 className="mt-3 text-lg font-semibold leading-tight">{p.name}</h3>
+        <Link to="/produit/$id" params={{ id: p.id }}><h3 className="mt-3 text-lg font-semibold leading-tight hover:text-primary">{p.name}</h3></Link>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="font-display text-2xl font-bold text-primary">{formatPrice(p.price)}</span>
           {p.oldPrice && <span className="text-sm text-muted-foreground line-through">{formatPrice(p.oldPrice)}</span>}
