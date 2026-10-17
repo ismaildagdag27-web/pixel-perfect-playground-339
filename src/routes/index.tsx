@@ -364,7 +364,7 @@ function Testimonials() {
     const t = setInterval(() => setI((x) => (x + 1) % testimonials.length), 5000);
     return () => clearInterval(t);
   }, []);
-  const t = testimonials[i];
+  const t = testimonials[i] ?? testimonials[0]!;
   return (
     <section className="bg-muted py-20">
       <div className="mx-auto max-w-3xl px-4 text-center">
