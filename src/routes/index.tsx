@@ -51,23 +51,14 @@ function Burst({ id }: { id: number }) {
 }
 
 function Index() {
-  const [cart, setCart] = useState<Line[]>([]);
+  const { cart, bump } = useCart();
   const [wish, setWish] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(false);
-  const [bump, setBump] = useState(0);
   const count = cart.reduce((s, l) => s + l.qty, 0);
   const total = cart.reduce((s, l) => s + l.qty * l.product.price, 0);
-
-  const add = (p: Product) => {
-    setCart((c) => {
-      const f = c.find((l) => l.product.id === p.id);
-      return f ? c.map((l) => (l.product.id === p.id ? { ...l, qty: l.qty + 1 } : l)) : [...c, { product: p, qty: 1 }];
-    });
-    setBump((b) => b + 1);
-  };
-  const setQty = (id: string, d: number) =>
-    setCart((c) => c.map((l) => (l.product.id === id ? { ...l, qty: l.qty + d } : l)).filter((l) => l.qty > 0));
+  const add = (p: Product) => cartActions.add(p);
+  const setQty = cartActions.setQty;
   const toggleWish = (id: string) => setWish((w) => (w.includes(id) ? w.filter((x) => x !== id) : [...w, id]));
 
   return (
