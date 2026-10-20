@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useCart, cartActions } from "@/lib/cart";
-import { useEffect, useState, type ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
-  Search, Heart, ShoppingCart, Menu, X, Star, ShieldCheck, Sun, Truck, HeartHandshake,
-  ArrowRight, Plus, Minus, Cloud, Leaf, Instagram, Facebook, Youtube, Quote, ChevronLeft, ChevronRight, Sparkles, Phone,
+  Search, Heart, ShoppingCart, Menu, X, Star, Sun,
+  ArrowRight, Plus, Minus, Cloud, Leaf, Instagram, Facebook, Youtube, Sparkles, Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { products, formatPrice, type Product } from "@/lib/products";
@@ -120,10 +120,14 @@ function Index() {
       <section id="bestsellers" className="bg-sky-gradient py-20">
         <div className="mx-auto max-w-7xl px-4">
           <Reveal>
-            <p className="font-display font-semibold text-primary">Collection Trigano & TP</p>
+            <p className="font-display font-semibold text-primary">LIAMSI TOYS</p>
             <h2 className="mt-1 text-4xl font-bold md:text-5xl">Notre catalogue</h2>
           </Reveal>
           <p className="mt-4 text-muted-foreground">{visibleProducts.length} produits</p>
+          <div className="mt-5 flex items-center gap-2 rounded-md border border-input bg-card p-3 md:hidden">
+            <Search className="h-4 w-4 text-muted-foreground" />
+            <input aria-label="Rechercher dans le catalogue" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nom ou référence..." className="min-w-0 flex-1 bg-transparent outline-none" />
+          </div>
           {visibleProducts.length === 0 && <p className="mt-6">Aucun produit trouvé.</p>}
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {visibleProducts.map((p, i) => (
