@@ -44,7 +44,7 @@ function ProductPage() {
   const related = products.filter((x) => x.id !== p.id).slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-hidden bg-background">
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2 font-semibold hover:text-primary"><ArrowLeft className="h-5 w-5" /> Boutique</Link>
@@ -57,14 +57,14 @@ function ProductPage() {
       </header>
 
       <main className="mx-auto grid max-w-7xl gap-10 px-4 py-12 lg:grid-cols-2">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative min-w-0">
           <div className="absolute -inset-3 rotate-2 rounded-[2.5rem] bg-sky" />
           <img src={p.image} alt={p.name} width={1024} height={1024} className="relative aspect-square w-full rounded-[2rem] bg-card object-contain p-6 shadow-soft" />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="min-w-0">
           <p className="font-display font-semibold text-primary">Réf. {p.id}</p>
-          <h1 className="mt-2 text-4xl font-bold leading-tight md:text-5xl">{p.name}</h1>
+          <h1 className="mt-2 break-words text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">{p.name}</h1>
           <div className="mt-6 flex items-baseline gap-3">
             <span className="font-display text-4xl font-bold text-primary">{formatPrice(p.price)}</span>
 
@@ -80,7 +80,7 @@ function ProductPage() {
               <span className="w-6 text-center font-bold">{qty}</span>
               <Button variant="ghost" size="icon" aria-label="Plus" disabled={remaining !== null && qty >= remaining} onClick={() => setQty(qty + 1)}><Plus /></Button>
             </div>
-            <Button variant="hero" size="lg" className="h-14 flex-1 px-8" disabled={!available || (remaining !== null && (remaining === 0 || qty > remaining))} onClick={() => { cartActions.add(p, qty); setAdded(true); setTimeout(() => setAdded(false), 1800); }}>
+            <Button variant="hero" size="lg" className="h-14 basis-full px-4 sm:flex-1 sm:basis-auto sm:px-8" disabled={!available || (remaining !== null && (remaining === 0 || qty > remaining))} onClick={() => { cartActions.add(p, qty); setAdded(true); setTimeout(() => setAdded(false), 1800); }}>
               {added ? <><Check /> Ajouté !</> : <><ShoppingCart /> Ajouter au panier</>}
             </Button>
           </div>
