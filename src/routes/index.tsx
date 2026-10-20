@@ -7,7 +7,7 @@ import {
   ArrowRight, Plus, Minus, Cloud, Leaf, Instagram, Facebook, Youtube, Quote, ChevronLeft, ChevronRight, Sparkles, Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { categories, products, testimonials, formatPrice, type Product } from "@/lib/products";
+import { products, formatPrice, type Product } from "@/lib/products";
 import hero from "@/assets/hero.jpg";
 
 export const CONTACT_PHONE = "+212 615893031";
@@ -57,6 +57,8 @@ function Index() {
   const [wish, setWish] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(false);
+  const [search, setSearch] = useState("");
+  const visibleProducts = products.filter((p) => `${p.name} ${p.id}`.toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr")));
   const count = cart.reduce((s, l) => s + l.qty, 0);
   const total = cart.reduce((s, l) => s + l.qty * l.product.price, 0);
   const add = (p: Product) => cartActions.add(p);
@@ -69,7 +71,7 @@ function Index() {
       <div className="overflow-hidden bg-foreground py-2 text-sm font-semibold text-background">
         <div className="flex w-max animate-marquee gap-12 whitespace-nowrap">
           {Array.from({ length: 6 }).map((_, i) => (
-            <span key={i} className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-accent" /> Livraison rapide & sécurisée | Qualité garantie pour le plein air</span>
+            <span key={i} className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-accent" /> LIAMSI TOYS | Catalogue de jeux de plein air</span>
           ))}
         </div>
       </div>
@@ -83,13 +85,12 @@ function Index() {
             LIAMSI<span className="text-primary">TOYS</span>
           </a>
           <nav className="ml-6 hidden gap-6 font-semibold lg:flex">
-            {categories.map((c) => (
-              <a key={c.name} href="#categories" className="relative transition-colors hover:text-primary">{c.name}</a>
-            ))}
+            <a href="#bestsellers" className="hover:text-primary">Catalogue</a>
+            <a href="#contact" className="hover:text-primary">Contact</a>
           </nav>
           <div className="ml-auto hidden max-w-xs flex-1 items-center gap-2 rounded-full border border-input bg-muted px-4 py-2 md:flex">
             <Search className="h-4 w-4 text-muted-foreground" />
-            <input aria-label="Rechercher" placeholder="Rechercher un jeu..." className="w-full bg-transparent text-sm outline-none" />
+            <input aria-label="Rechercher" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Nom ou référence..." className="w-full bg-transparent text-sm outline-none" />
           </div>
           <button aria-label="Liste de souhaits" className="relative ml-auto rounded-full p-2 transition hover:bg-muted md:ml-0">
             <Heart className="h-6 w-6" />
@@ -105,7 +106,8 @@ function Index() {
           {menu && (
             <motion.nav initial={{ height: 0 }} animate={{ height: "auto" }} exit={{ height: 0 }} className="overflow-hidden border-t border-border lg:hidden">
               <div className="flex flex-col gap-3 px-4 py-4 font-semibold">
-                {categories.map((c) => <a key={c.name} href="#categories" onClick={() => setMenu(false)}>{c.name}</a>)}
+                <a href="#bestsellers" onClick={() => setMenu(false)}>Catalogue</a>
+                <a href="#contact" onClick={() => setMenu(false)}>Contact</a>
               </div>
             </motion.nav>
           )}
@@ -114,40 +116,17 @@ function Index() {
 
       <HeroSection />
 
-      {/* Categories */}
-      <section id="categories" className="mx-auto max-w-7xl px-4 py-20">
-        <Reveal>
-          <p className="font-display font-semibold text-primary">Nos univers</p>
-          <h2 className="mt-1 text-4xl font-bold md:text-5xl">Choisissez votre aventure</h2>
-        </Reveal>
-        <div className="mt-10 grid grid-cols-2 gap-4 md:gap-6 lg:grid-cols-4">
-          {categories.map((c, i) => (
-            <Reveal key={c.name} delay={i * 0.1}>
-              <a href="#bestsellers" className="group relative block aspect-[3/4] overflow-hidden rounded-3xl shadow-soft">
-                <img src={c.image} alt={c.name} loading="lazy" width={1024} height={1024} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-foreground/80 via-foreground/10 to-transparent" />
-                <div className="absolute inset-x-0 bottom-0 p-5 text-background">
-                  <h3 className="text-2xl font-bold">{c.name}</h3>
-                  <p className="text-sm opacity-80">{c.count} produits</p>
-                  <span className="mt-3 inline-flex translate-y-4 items-center gap-1 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
-                    Explorer <ArrowRight className="h-4 w-4" />
-                  </span>
-                </div>
-              </a>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
       {/* Best sellers */}
       <section id="bestsellers" className="bg-sky-gradient py-20">
         <div className="mx-auto max-w-7xl px-4">
           <Reveal>
-            <p className="font-display font-semibold text-primary">Les chouchous des familles</p>
-            <h2 className="mt-1 text-4xl font-bold md:text-5xl">Nos Meilleures Ventes</h2>
+            <p className="font-display font-semibold text-primary">Collection Trigano & TP</p>
+            <h2 className="mt-1 text-4xl font-bold md:text-5xl">Notre catalogue</h2>
           </Reveal>
+          <p className="mt-4 text-muted-foreground">{visibleProducts.length} produits</p>
+          {visibleProducts.length === 0 && <p className="mt-6">Aucun produit trouvé.</p>}
           <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-            {products.map((p, i) => (
+            {visibleProducts.map((p, i) => (
               <Reveal key={p.id} delay={(i % 4) * 0.08}>
                 <ProductCard p={p} onAdd={() => add(p)} wished={wish.includes(p.id)} onWish={() => toggleWish(p.id)} />
               </Reveal>
@@ -155,31 +134,6 @@ function Index() {
           </div>
         </div>
       </section>
-
-      {/* Why */}
-      <section className="mx-auto max-w-7xl px-4 py-20">
-        <Reveal><h2 className="text-center text-4xl font-bold md:text-5xl">Pourquoi Choisir <span className="text-primary">LIAMSI TOYS</span> ?</h2></Reveal>
-        <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { icon: ShieldCheck, t: "Sécurité & Qualité", d: "Matériaux robustes et certifiés", c: "bg-primary" },
-            { icon: Sun, t: "Jeu en plein air", d: "Encourager le mouvement et la découverte", c: "bg-accent" },
-            { icon: Truck, t: "Livraison facile", d: "Expédition rapide chez vous", c: "bg-secondary" },
-            { icon: HeartHandshake, t: "Plaisir en famille", d: "Des souvenirs inoubliables", c: "bg-coral" },
-          ].map((b, i) => (
-            <Reveal key={b.t} delay={i * 0.1}>
-              <motion.div whileHover={{ y: -8, rotate: i % 2 ? 1 : -1 }} className="h-full rounded-3xl border-2 border-border bg-card p-7 text-center">
-                <div className={`mx-auto flex h-16 w-16 items-center justify-center rounded-2xl ${b.c} text-foreground`}>
-                  <b.icon className="h-8 w-8" />
-                </div>
-                <h3 className="mt-5 text-xl font-bold">{b.t}</h3>
-                <p className="mt-2 text-muted-foreground">{b.d}</p>
-              </motion.div>
-            </Reveal>
-          ))}
-        </div>
-      </section>
-
-      <Testimonials />
 
       {/* Footer */}
       <footer className="bg-foreground text-background">
@@ -206,7 +160,7 @@ function Index() {
               { t: "Légal", l: ["Mentions légales", "CGV", "Confidentialité"] },
               { t: "Contact", l: ["Nous contacter", "Service client", "À propos"], phone: CONTACT_PHONE },
             ] as { t: string; l: string[]; phone?: string }[]).map((c) => (
-              <div key={c.t}>
+              <div key={c.t} id={c.phone ? "contact" : undefined}>
                 <p className="font-display text-lg font-semibold">{c.t}</p>
                 <ul className="mt-3 space-y-2 text-sm opacity-70">{c.l.map((x) => <li key={x}><a href="#" className="hover:text-primary">{x}</a></li>)}</ul>
                 {c.phone && (
@@ -246,14 +200,14 @@ function Index() {
                 )}
                 {cart.map((l) => (
                   <motion.div layout key={l.product.id} className="flex gap-4 rounded-2xl bg-muted p-3">
-                    <img src={l.product.image} alt={l.product.name} className="h-20 w-20 rounded-xl object-cover" />
-                    <div className="flex-1">
+                    <img src={l.product.image} alt={l.product.name} className="h-20 w-20 rounded-xl object-contain" />
+                    <div className="min-w-0 flex-1">
                       <p className="font-semibold leading-tight">{l.product.name}</p>
                       <p className="font-display font-bold text-primary">{formatPrice(l.product.price)}</p>
                       <div className="mt-2 flex items-center gap-3">
                         <button aria-label="Moins" onClick={() => setQty(l.product.id, -1)} className="rounded-full bg-background p-1"><Minus className="h-4 w-4" /></button>
                         <span className="font-bold">{l.qty}</span>
-                        <button aria-label="Plus" onClick={() => setQty(l.product.id, 1)} className="rounded-full bg-background p-1"><Plus className="h-4 w-4" /></button>
+                        <button aria-label="Plus" disabled={l.product.stock !== null && l.qty >= l.product.stock} onClick={() => setQty(l.product.id, 1)} className="rounded-full bg-background p-1"><Plus className="h-4 w-4" /></button>
                       </div>
                     </div>
                   </motion.div>
@@ -291,7 +245,7 @@ function HeroSection() {
       <div className="relative mx-auto grid max-w-7xl items-center gap-10 px-4 py-16 md:py-24 lg:grid-cols-2">
         <div>
           <motion.span initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-2 rounded-full bg-background px-4 py-1.5 text-sm font-bold text-primary shadow-soft">
-            <Sun className="h-4 w-4" /> Collection Plein Air 2026
+            <Sun className="h-4 w-4" /> LIAMSI TOYS
           </motion.span>
           <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mt-5 text-5xl font-bold leading-[1.05] md:text-6xl xl:text-7xl">
             Transformez votre jardin en <span className="text-primary">terrain d'aventures</span> !
@@ -300,21 +254,14 @@ function HeroSection() {
             Des jeux de plein air robustes et joyeux pour que vos enfants bougent, explorent et créent des souvenirs en famille.
           </motion.p>
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="mt-8 flex flex-wrap gap-4">
-            <Button asChild variant="hero" size="lg" className="h-14 px-8"><a href="#categories">Découvrir la collection <ArrowRight /></a></Button>
-            <Button asChild variant="sunny" size="lg" className="h-14 px-8"><a href="#bestsellers">Nos Meilleures Ventes</a></Button>
+            <Button asChild variant="hero" size="lg" className="h-14 px-8"><a href="#bestsellers">Découvrir la collection <ArrowRight /></a></Button>
+            <Button asChild variant="sunny" size="lg" className="h-14 px-8"><a href="#bestsellers">Notre catalogue</a></Button>
           </motion.div>
-          <div className="mt-8 flex items-center gap-3 text-sm font-semibold">
-            <div className="flex">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className="h-5 w-5 fill-accent text-accent" />)}</div>
-            4,9/5 · plus de 2 000 familles conquises
-          </div>
+        </div>
         </div>
         <motion.div initial={{ opacity: 0, scale: 0.9, rotate: 2 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 0.8 }} className="relative">
           <div className="absolute -inset-4 rotate-3 rounded-[2.5rem] bg-accent" />
           <img src={hero} alt="Enfants jouant sur une balançoire et un toboggan dans le jardin" width={1600} height={1008} className="relative aspect-[4/3] w-full rounded-[2rem] object-cover shadow-soft" />
-          <div className="absolute -bottom-6 -left-4 flex animate-floaty items-center gap-3 rounded-2xl bg-background p-4 shadow-soft">
-            <ShieldCheck className="h-8 w-8 text-primary" />
-            <div><p className="font-display font-bold">Certifié EN 71</p><p className="text-xs text-muted-foreground">Sécurité garantie</p></div>
-          </div>
         </motion.div>
       </div>
     </section>
@@ -323,20 +270,18 @@ function HeroSection() {
 
 function ProductCard({ p, onAdd, wished, onWish }: { p: Product; onAdd: () => void; wished: boolean; onWish: () => void }) {
   const [burst, setBurst] = useState(0);
-  const badgeColor = p.badge === "Nouveau" ? "bg-secondary" : p.badge === "Incontournable" ? "bg-coral text-primary-foreground" : "bg-accent";
   return (
-    <motion.div whileHover={{ y: -8 }} className="group h-full overflow-hidden rounded-3xl bg-card shadow-soft">
-      <div className="relative aspect-square overflow-hidden">
+    <motion.div whileHover={{ y: -8 }} className="group flex h-full flex-col overflow-hidden rounded-3xl bg-card shadow-soft">
+      <div className="relative aspect-square shrink-0 overflow-hidden">
         <Link to="/produit/$id" params={{ id: p.id }} aria-label={p.name}>
-          <img src={p.image} alt={p.name} loading="lazy" width={1024} height={1024} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+          <img src={p.image} alt={p.name} loading="lazy" width={1024} height={1024} className="aspect-square h-full w-full bg-card object-contain p-5 transition-transform duration-500 group-hover:scale-105" />
         </Link>
-        {p.badge && <span className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-bold ${badgeColor}`}>{p.badge}</span>}
-        <button aria-label="Ajouter aux favoris" onClick={onWish} className="absolute right-3 top-3 rounded-full bg-background p-2 transition hover:scale-110">
+        <Button variant="ghost" size="icon" aria-label="Ajouter aux favoris" onClick={onWish} className="absolute right-3 top-3 rounded-full bg-background p-2 transition hover:scale-110">
           <Heart className={`h-4 w-4 ${wished ? "fill-coral text-coral" : ""}`} />
-        </button>
-        <div className="absolute inset-x-3 bottom-3 translate-y-16 transition-transform duration-300 group-hover:translate-y-0">
+        </Button>
+        <div className="absolute inset-x-3 bottom-3">
           <div className="relative">
-            <Button variant="hero" className="w-full" onClick={() => { onAdd(); setBurst((b) => b + 1); }}>
+            <Button variant="hero" className="w-full" disabled={p.stock !== null && p.stock <= 0} onClick={() => { onAdd(); setBurst((b) => b + 1); }}>
               <ShoppingCart className="group-hover:animate-bounce" /> Ajouter au panier
             </Button>
             {burst > 0 && <Burst key={burst} id={burst} />}
@@ -344,48 +289,15 @@ function ProductCard({ p, onAdd, wished, onWish }: { p: Product; onAdd: () => vo
         </div>
       </div>
       <div className="p-5">
-        <div className="flex items-center justify-between text-xs">
-          <span className="rounded-full bg-muted px-2.5 py-1 font-bold text-muted-foreground">{p.age}</span>
-          <span className="flex items-center gap-1 font-semibold"><Star className="h-3.5 w-3.5 fill-accent text-accent" />{p.rating} ({p.reviews})</span>
-        </div>
+        <p className="text-xs text-muted-foreground">Réf. {p.id}</p>
         <Link to="/produit/$id" params={{ id: p.id }}><h3 className="mt-3 text-lg font-semibold leading-tight hover:text-primary">{p.name}</h3></Link>
         <div className="mt-2 flex items-baseline gap-2">
           <span className="font-display text-2xl font-bold text-primary">{formatPrice(p.price)}</span>
-          {p.oldPrice && <span className="text-sm text-muted-foreground line-through">{formatPrice(p.oldPrice)}</span>}
+
         </div>
+        {p.stock !== null && <p className="mt-2 text-sm text-muted-foreground">Stock : {p.stock}</p>}
       </div>
     </motion.div>
-  );
-}
-
-function Testimonials() {
-  const [i, setI] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setI((x) => (x + 1) % testimonials.length), 5000);
-    return () => clearInterval(t);
-  }, []);
-  const t = testimonials[i] ?? testimonials[0]!;
-  return (
-    <section className="bg-muted py-20">
-      <div className="mx-auto max-w-3xl px-4 text-center">
-        <Reveal><h2 className="text-4xl font-bold md:text-5xl">Les parents en parlent</h2></Reveal>
-        <div className="relative mt-10 min-h-64 rounded-3xl bg-card p-8 shadow-soft md:p-12">
-          <Quote className="mx-auto h-10 w-10 text-primary" />
-          <AnimatePresence mode="wait">
-            <motion.div key={i} initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -40 }} transition={{ duration: 0.4 }}>
-              <div className="mt-4 flex justify-center">{Array.from({ length: 5 }).map((_, k) => <Star key={k} className="h-5 w-5 fill-accent text-accent" />)}</div>
-              <p className="mt-4 text-xl font-semibold leading-relaxed">« {t.text} »</p>
-              <p className="mt-4 font-display font-bold">{t.name} <span className="font-sans font-normal text-muted-foreground">— {t.city}</span></p>
-            </motion.div>
-          </AnimatePresence>
-          <div className="mt-6 flex items-center justify-center gap-3">
-            <button aria-label="Précédent" onClick={() => setI((i - 1 + testimonials.length) % testimonials.length)} className="rounded-full bg-muted p-2 hover:bg-primary hover:text-primary-foreground"><ChevronLeft className="h-5 w-5" /></button>
-            {testimonials.map((_, k) => <span key={k} className={`h-2 rounded-full transition-all ${k === i ? "w-8 bg-primary" : "w-2 bg-border"}`} />)}
-            <button aria-label="Suivant" onClick={() => setI((i + 1) % testimonials.length)} className="rounded-full bg-muted p-2 hover:bg-primary hover:text-primary-foreground"><ChevronRight className="h-5 w-5" /></button>
-          </div>
-        </div>
-      </div>
-    </section>
   );
 }
 
