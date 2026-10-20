@@ -1,17 +1,10 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { ArrowLeft, Star, ShoppingCart, Minus, Plus, ShieldCheck, Truck, RotateCcw, Check } from "lucide-react";
+import { ArrowLeft, ShoppingCart, Minus, Plus, Check, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { products, formatPrice } from "@/lib/products";
 import { useCart, cartActions } from "@/lib/cart";
-
-const details: Record<string, { desc: string; specs: string[] }> = {
-  "Balançoires": { desc: "Une structure en bois massif traité autoclave, pensée pour des heures de balancement en toute sécurité. Ancrages au sol fournis et cordes réglables.", specs: ["Bois de pin traité classe 4", "Charge max. 50 kg par siège", "Ancrages au sol inclus", "Montage : environ 3 h"] },
-  "Toboggans": { desc: "Glissade douce et rebords hauts pour les petits aventuriers. Plastique robuste anti-UV qui garde ses couleurs saison après saison.", specs: ["Polyéthylène anti-UV", "Marches antidérapantes", "Pliable pour le rangement", "Montage sans outils"] },
-  "Trampolines": { desc: "Rebond dynamique avec filet de protection intégral et coussin de ressorts épais. Idéal pour se dépenser en famille.", specs: ["Cadre acier galvanisé", "Filet de sécurité intégré", "Coussins de protection 20 mm", "Charge max. 150 kg"] },
-  "Maisonnettes": { desc: "Un vrai petit chez-soi au fond du jardin : fenêtres, porte et jardinières pour imaginer mille histoires.", specs: ["Bois épicéa 12 mm", "Toit bitumé étanche", "Fenêtres en plexiglas", "Plancher inclus"] },
-};
 
 export const Route = createFileRoute("/produit/$id")({
   loader: ({ params }) => {
@@ -22,7 +15,7 @@ export const Route = createFileRoute("/produit/$id")({
   head: ({ loaderData }) => {
     const p = loaderData?.product;
     const title = p ? `${p.name} — LIAMSI TOYS` : "Produit — LIAMSI TOYS";
-    const description = p ? `${p.name} (${p.age}) à ${formatPrice(p.price)}. ${details[p.category]?.desc ?? ""}` : "Jeux de plein air LIAMSI TOYS.";
+    const description = p ? `${p.name} — Référence ${p.id}. Prix : ${formatPrice(p.price)}.${p.description ? ` ${p.description}` : ""}` : "Jeux de plein air LIAMSI TOYS.";
     return {
       meta: [
         { title }, { name: "description", content: description },
@@ -46,11 +39,12 @@ function ProductPage() {
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const count = cart.reduce((s, l) => s + l.qty, 0);
-  const d = details[p.category]!;
+  const available = p.stock === null || p.stock > 0;
+  const remaining = p.stock === null ? null : Math.max(0, p.stock - (cart.find((line) => line.product.id === p.id)?.qty ?? 0));
   const related = products.filter((x) => x.id !== p.id).slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen overflow-x-hidden bg-background">
       <header className="sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3">
           <Link to="/" className="flex items-center gap-2 font-semibold hover:text-primary"><ArrowLeft className="h-5 w-5" /> Boutique</Link>
@@ -63,45 +57,35 @@ function ProductPage() {
       </header>
 
       <main className="mx-auto grid max-w-7xl gap-10 px-4 py-12 lg:grid-cols-2">
-        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative">
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="relative min-w-0">
           <div className="absolute -inset-3 rotate-2 rounded-[2.5rem] bg-sky" />
-          <img src={p.image} alt={p.name} width={1024} height={1024} className="relative aspect-square w-full rounded-[2rem] object-cover shadow-soft" />
-          {p.badge && <span className="absolute left-5 top-5 rounded-full bg-accent px-4 py-1.5 text-sm font-bold text-accent-foreground">{p.badge}</span>}
+          <img src={p.image} alt={p.name} width={1024} height={1024} className="relative aspect-square w-full rounded-[2rem] bg-card object-contain p-6 shadow-soft" />
         </motion.div>
 
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <p className="font-display font-semibold text-primary">{p.category}</p>
-          <h1 className="mt-2 text-4xl font-bold leading-tight md:text-5xl">{p.name}</h1>
-          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm">
-            <span className="flex">{Array.from({ length: 5 }).map((_, i) => <Star key={i} className={`h-5 w-5 ${i < Math.round(p.rating) ? "fill-accent text-accent" : "text-border"}`} />)}</span>
-            <span className="font-semibold">{p.rating} · {p.reviews} avis</span>
-            <span className="rounded-full bg-muted px-3 py-1 font-bold text-muted-foreground">{p.age}</span>
-          </div>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="min-w-0">
+          <p className="font-display font-semibold text-primary">Réf. {p.id}</p>
+          <h1 className="mt-2 break-words text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">{p.name}</h1>
           <div className="mt-6 flex items-baseline gap-3">
             <span className="font-display text-4xl font-bold text-primary">{formatPrice(p.price)}</span>
-            {p.oldPrice && <span className="text-lg text-muted-foreground line-through">{formatPrice(p.oldPrice)}</span>}
-          </div>
-          <p className="mt-6 text-lg text-muted-foreground">{d.desc}</p>
-          <ul className="mt-6 grid gap-2 sm:grid-cols-2">
-            {d.specs.map((s) => <li key={s} className="flex items-center gap-2"><Check className="h-5 w-5 text-primary" />{s}</li>)}
-          </ul>
 
+          </div>
+          {p.description && <p className="mt-6 text-lg text-muted-foreground">{p.description}</p>}
+          <dl className="mt-6 space-y-3 border-y border-border py-5">
+            {p.category && <div><dt className="text-sm text-muted-foreground">Catégorie</dt><dd>{p.category}</dd></div>}
+            <div><dt className="text-sm text-muted-foreground">Stock</dt><dd>{p.stock === null ? "Non renseigné" : `${p.stock} unité${p.stock > 1 ? "s" : ""}`}</dd></div>
+          </dl>
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <div className="flex items-center gap-4 rounded-full border-2 border-border px-4 py-2">
-              <button aria-label="Moins" onClick={() => setQty(Math.max(1, qty - 1))}><Minus className="h-4 w-4" /></button>
+              <Button variant="ghost" size="icon" aria-label="Moins" disabled={qty <= 1} onClick={() => setQty(Math.max(1, qty - 1))}><Minus /></Button>
               <span className="w-6 text-center font-bold">{qty}</span>
-              <button aria-label="Plus" onClick={() => setQty(qty + 1)}><Plus className="h-4 w-4" /></button>
+              <Button variant="ghost" size="icon" aria-label="Plus" disabled={remaining !== null && qty >= remaining} onClick={() => setQty(qty + 1)}><Plus /></Button>
             </div>
-            <Button variant="hero" size="lg" className="h-14 flex-1 px-8" onClick={() => { cartActions.add(p, qty); setAdded(true); setTimeout(() => setAdded(false), 1800); }}>
+            <Button variant="hero" size="lg" className="h-14 basis-full px-4 sm:flex-1 sm:basis-auto sm:px-8" disabled={!available || (remaining !== null && (remaining === 0 || qty > remaining))} onClick={() => { cartActions.add(p, qty); setAdded(true); setTimeout(() => setAdded(false), 1800); }}>
               {added ? <><Check /> Ajouté !</> : <><ShoppingCart /> Ajouter au panier</>}
             </Button>
           </div>
 
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {[{ i: ShieldCheck, t: "Certifié sécurité" }, { i: Truck, t: "Livraison rapide" }, { i: RotateCcw, t: "Retour 30 jours" }].map((b) => (
-              <div key={b.t} className="flex items-center gap-2 rounded-2xl bg-muted p-3 text-sm font-semibold"><b.i className="h-5 w-5 text-primary" />{b.t}</div>
-            ))}
-          </div>
+          <Button asChild variant="outline" className="mt-8"><a href="tel:+212615893031"><Phone /> +212 615893031</a></Button>
         </motion.div>
       </main>
 
@@ -110,7 +94,7 @@ function ProductPage() {
         <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
           {related.map((r) => (
             <Link key={r.id} to="/produit/$id" params={{ id: r.id }} className="group overflow-hidden rounded-3xl bg-card shadow-soft transition-transform hover:-translate-y-2">
-              <img src={r.image} alt={r.name} loading="lazy" width={1024} height={1024} className="aspect-square w-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <img src={r.image} alt={r.name} loading="lazy" width={1024} height={1024} className="aspect-square w-full bg-card object-contain p-4 transition-transform duration-500 group-hover:scale-105" />
               <div className="p-4">
                 <p className="font-semibold leading-tight">{r.name}</p>
                 <p className="mt-1 font-display text-xl font-bold text-primary">{formatPrice(r.price)}</p>
