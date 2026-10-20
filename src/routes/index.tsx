@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { categories, products, testimonials, formatPrice, type Product } from "@/lib/products";
 import hero from "@/assets/hero.jpg";
 
+export const CONTACT_PHONE = "+212 615893031";
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
