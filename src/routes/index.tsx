@@ -258,7 +258,6 @@ function HeroSection() {
             <Button asChild variant="sunny" size="lg" className="h-14 px-8"><a href="#bestsellers">Notre catalogue</a></Button>
           </motion.div>
         </div>
-        </div>
         <motion.div initial={{ opacity: 0, scale: 0.9, rotate: 2 }} animate={{ opacity: 1, scale: 1, rotate: 0 }} transition={{ duration: 0.8 }} className="relative">
           <div className="absolute -inset-4 rotate-3 rounded-[2.5rem] bg-accent" />
           <img src={hero} alt="Enfants jouant sur une balançoire et un toboggan dans le jardin" width={1600} height={1008} className="relative aspect-[4/3] w-full rounded-[2rem] object-cover shadow-soft" />
