@@ -4,11 +4,13 @@ import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import {
   Search, Heart, ShoppingCart, Menu, X, Star, ShieldCheck, Sun, Truck, HeartHandshake,
-  ArrowRight, Plus, Minus, Cloud, Leaf, Instagram, Facebook, Youtube, Quote, ChevronLeft, ChevronRight, Sparkles,
+  ArrowRight, Plus, Minus, Cloud, Leaf, Instagram, Facebook, Youtube, Quote, ChevronLeft, ChevronRight, Sparkles, Phone,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { categories, products, testimonials, formatPrice, type Product } from "@/lib/products";
 import hero from "@/assets/hero.jpg";
+
+export const CONTACT_PHONE = "+212 615893031";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -199,14 +201,19 @@ function Index() {
                 ))}
               </div>
             </div>
-            {[
+            {([
               { t: "Aide", l: ["FAQ", "Infos livraison", "Retours"] },
               { t: "Légal", l: ["Mentions légales", "CGV", "Confidentialité"] },
-              { t: "Contact", l: ["Nous contacter", "Service client", "À propos"] },
-            ].map((c) => (
+              { t: "Contact", l: ["Nous contacter", "Service client", "À propos"], phone: CONTACT_PHONE },
+            ] as { t: string; l: string[]; phone?: string }[]).map((c) => (
               <div key={c.t}>
                 <p className="font-display text-lg font-semibold">{c.t}</p>
                 <ul className="mt-3 space-y-2 text-sm opacity-70">{c.l.map((x) => <li key={x}><a href="#" className="hover:text-primary">{x}</a></li>)}</ul>
+                {c.phone && (
+                  <a href={`tel:${c.phone.replace(/\s/g, "")}`} className="mt-4 inline-flex items-center gap-2 rounded-full bg-background/10 px-4 py-2 text-sm font-semibold transition hover:-translate-y-0.5 hover:bg-primary">
+                    <Phone className="h-4 w-4" />{c.phone}
+                  </a>
+                )}
               </div>
             ))}
           </div>
