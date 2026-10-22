@@ -9,10 +9,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { products, formatPrice, type Product } from "@/lib/products";
 import hero from "@/assets/hero.jpg";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { catalogQuery } from "@/lib/catalog-query";
+import { AdminLink } from "@/components/admin-link";
 
 export const CONTACT_PHONE = "+212 615893031";
 
 export const Route = createFileRoute("/")({
+  loader: ({ context }) => context.queryClient.ensureQueryData(catalogQuery),
   head: () => ({
     meta: [
       { title: "LIAMSI TOYS — Transformez votre jardin en terrain d'aventures" },
@@ -53,14 +57,16 @@ function Burst({ id }: { id: number }) {
 }
 
 function Index() {
+  const { data: products } = useSuspenseQuery(catalogQuery);
   const { cart, bump } = useCart();
+  const currentCart = cart.map((line) => ({ ...line, product: products.find((p) => p.id === line.product.id) ?? line.product }));
   const [wish, setWish] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState("");
   const visibleProducts = products.filter((p) => `${p.name} ${p.id}`.toLocaleLowerCase("fr").includes(search.toLocaleLowerCase("fr")));
   const count = cart.reduce((s, l) => s + l.qty, 0);
-  const total = cart.reduce((s, l) => s + l.qty * l.product.price, 0);
+  const total = currentCart.reduce((s, l) => s + l.qty * l.product.price, 0);
   const add = (p: Product) => cartActions.add(p);
   const setQty = cartActions.setQty;
   const toggleWish = (id: string) => setWish((w) => (w.includes(id) ? w.filter((x) => x !== id) : [...w, id]));
@@ -177,6 +183,7 @@ function Index() {
           </div>
           <div className="mt-12 flex flex-col items-center justify-between gap-4 border-t border-background/15 pt-6 text-sm opacity-70 md:flex-row">
             <p>© 2026 LIAMSI TOYS. Tous droits réservés.</p>
+            <AdminLink />
             <div className="flex gap-2">
               {["VISA", "Mastercard", "PayPal", "Apple Pay"].map((p) => <span key={p} className="rounded-md bg-background px-2 py-1 text-xs font-bold text-foreground">{p}</span>)}
             </div>
@@ -202,7 +209,7 @@ function Index() {
                     <p className="mt-4">Votre panier est vide… pour l'instant !</p>
                   </div>
                 )}
-                {cart.map((l) => (
+                {currentCart.map((l) => (
                   <motion.div layout key={l.product.id} className="flex gap-4 rounded-2xl bg-muted p-3">
                     <img src={l.product.image} alt={l.product.name} className="h-20 w-20 rounded-xl object-contain" />
                     <div className="min-w-0 flex-1">

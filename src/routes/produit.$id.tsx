@@ -5,10 +5,13 @@ import { ArrowLeft, ShoppingCart, Minus, Plus, Check, Phone } from "lucide-react
 import { Button } from "@/components/ui/button";
 import { products, formatPrice } from "@/lib/products";
 import { useCart, cartActions } from "@/lib/cart";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { catalogQuery } from "@/lib/catalog-query";
 
 export const Route = createFileRoute("/produit/$id")({
-  loader: ({ params }) => {
-    const product = products.find((p) => p.id === params.id);
+  loader: async ({ params, context }) => {
+    const catalog = await context.queryClient.ensureQueryData(catalogQuery);
+    const product = catalog.find((p) => p.id === params.id);
     if (!product) throw notFound();
     return { product };
   },
@@ -34,7 +37,9 @@ export const Route = createFileRoute("/produit/$id")({
 });
 
 function ProductPage() {
-  const { product: p } = Route.useLoaderData();
+  const { product } = Route.useLoaderData();
+  const { data: products } = useSuspenseQuery(catalogQuery);
+  const p = products.find((p) => p.id === product.id) ?? product;
   const { cart, bump } = useCart();
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
