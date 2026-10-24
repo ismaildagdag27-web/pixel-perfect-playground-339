@@ -57,7 +57,7 @@ function PriceEditor() {
     </div>
     <div className="relative max-w-md"><Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" /><Input aria-label="Rechercher un produit" placeholder="Nom ou référence…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" /></div>
     <div className="mt-6 hidden grid grid-cols-[minmax(0,1fr)_140px_240px] gap-4 border-b border-border pb-3 text-sm font-semibold text-muted-foreground md:grid"><span>Produit</span><span>Prix actuel</span><span>Nouveau prix</span></div>
-    <div className="mt-4 md:mt-0">{visible.map((p) => <PriceRow key={`${p.id}:${p.price}`} product={p} />)}</div>
+    <div className="mt-4 md:mt-0">{visible.map((p) => <PriceRow key={p.id} product={p} />)}</div>
     {!visible.length && <p className="py-12 text-muted-foreground">Aucun produit trouvé.</p>}
   </main>;
 }
