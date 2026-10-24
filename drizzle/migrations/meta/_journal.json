@@ -8,6 +8,20 @@
       "when": 1792656868187,
       "tag": "0000_catalog_price_administration",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792837390350,
+      "tag": "0001_restrict_price_admin_functions",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792837418605,
+      "tag": "0002_least_privilege_catalog_admin",
+      "breakpoints": true
     }
   ]
 }
